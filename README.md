@@ -2,6 +2,8 @@
 
 A robust, production-ready starter kit for building multi-tenant applications with [Laravel](https://laravel.com) and [stancl/tenancy](https://tenancyforlaravel.com). This boilerplate comes pre-configured with a powerful Central Admin Panel built on [Filament](https://filamentphp.com) to manage tenants, subscriptions, and billing.
 
+**Built by and actively used at [quikpl.com](https://quikpl.com) to power our own SaaS platform.**
+
 ## Table of Contents
 
 - [Features](#features)
