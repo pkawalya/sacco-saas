@@ -95,9 +95,14 @@ A robust, production-ready starter kit for building multi-tenant applications wi
     npm run build
     ```
 
-7.  **Create an Admin User**
+7.  **Generate Shield Permissions & Assign Super Admin**
+    First, generate all permissions for Filament Shield. When prompted, select `permissions` for what you'd like to manage.
     ```bash
-    php artisan make:filament-user
+    php artisan shield:generate --all
+    ```
+    Next, assign the `super_admin` role to a user. When prompted, choose the `admin` panel and then select the `UserID` of the super admin (usually `1`).
+    ```bash
+    php artisan shield:super-admin
     ```
 
 ## Usage

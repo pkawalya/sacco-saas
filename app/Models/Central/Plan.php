@@ -25,6 +25,7 @@ class Plan extends Model
         'data', // JSON column to store custom limits (e.g., max_users, features_list)
         'is_active',
         'is_custom',
+        'support_custom_domain',
     ];
 
     protected $casts = [
@@ -32,6 +33,7 @@ class Plan extends Model
         'data' => 'array', // Automatically cast JSON to PHP array
         'is_active' => 'boolean',
         'is_custom' => 'boolean',
+        'support_custom_domain' => 'boolean',
     ];
 
     /**

@@ -47,13 +47,7 @@ class User extends Authenticatable implements FilamentUser
      */
     protected static function booted(): void
     {
-        static::created(function (User $user) {
-            // Ensure the 'user' role exists before assigning
-            // In a real app, you might want to check if it's already assigned
-            if (! $user->hasAnyRole(['super_admin', 'user'])) {
-                $user->assignRole('user');
-            }
-        });
+        // Role assignments are now handled explicitly in seeders or controllers.
     }
 
     /**

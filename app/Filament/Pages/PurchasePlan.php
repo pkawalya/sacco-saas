@@ -68,7 +68,8 @@ class PurchasePlan extends Page implements HasForms
                             ->descriptions(Plan::where('is_active', true)->get()->mapWithKeys(fn ($plan) => [
                                 $plan->id => $plan->currency.' '.number_format($plan->price, 2).' / '.$plan->billing_cycle,
                             ]))
-                            ->required(),
+                            ->required()
+                            ->live(),
                     ]),
 
                 Section::make('Tenant Details')
@@ -87,6 +88,12 @@ class PurchasePlan extends Page implements HasForms
                             ->unique(table: 'tenants', column: 'id')
                             ->regex('/^[a-z0-9\-]+$/')
                             ->helperText('Only lowercase letters, numbers, and hyphens.'),
+                        TextInput::make('custom_domain')
+                            ->label('Custom Domain')
+                            ->placeholder('example.com')
+                            ->visible(fn (callable $get) => Plan::find($get('plan_id'))?->support_custom_domain ?? false)
+                            ->unique(table: 'domains', column: 'domain')
+                            ->helperText('Enter your own domain name if your plan supports it.'),
                     ]),
             ])
             ->statePath('data');
@@ -105,6 +112,7 @@ class PurchasePlan extends Page implements HasForms
             'central_user_id' => Auth::id(),
             'plan_id' => $plan->id,
             'is_provisioned' => false,
+            'domain_name' => $data['custom_domain'] ?? null,
         ]);
 
         // 2. Create Pending Invoice

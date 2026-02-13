@@ -64,6 +64,10 @@ class PlanForm
                             ->label('Custom Plan')
                             ->default(false)
                             ->required(),
+                        Toggle::make('support_custom_domain')
+                            ->label('Support Custom Domain')
+                            ->default(false)
+                            ->required(),
                     ]),
             ]);
     }
