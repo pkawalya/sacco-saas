@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Tenants\Tables;
 
+use App\Filament\Resources\Tenants\TenantResource;
 use App\Models\Central\Tenant;
 use App\Services\TenantDeletionService;
 use App\Services\TenantProvisioningService;
@@ -9,10 +10,12 @@ use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 
 class TenantsTable
 {
@@ -47,14 +50,18 @@ class TenantsTable
             ->filters([
                 //
             ])
+            ->recordUrl(fn (Model $record): string => TenantResource::getUrl('view', ['record' => $record]))
             ->recordActions([
-                EditAction::make(),
+                ViewAction::make(),
+                EditAction::make()
+                    ->visible(fn () => auth()->user()->hasRole('super_admin')),
                 Action::make('provision')
                     ->label('Provision')
                     ->icon('heroicon-o-cpu-chip')
                     ->color('success')
                     ->requiresConfirmation()
                     ->hidden(fn (Tenant $record) => $record->is_provisioned)
+                    ->visible(fn () => auth()->user()->hasRole('super_admin'))
                     ->action(function (Tenant $record, TenantProvisioningService $service) {
                         $service->provisionManual($record);
                         Notification::make()
@@ -68,6 +75,7 @@ class TenantsTable
                     ->color('danger')
                     ->requiresConfirmation()
                     ->modalDescription('This will permanently delete the tenant database, storage, and record. This action cannot be undone.')
+                    ->visible(fn () => auth()->user()->hasRole('super_admin'))
                     ->action(function (Tenant $record, TenantDeletionService $service) {
                         $service->deleteTenant($record);
                         Notification::make()
@@ -79,7 +87,7 @@ class TenantsTable
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
-                ]),
+                ])->visible(fn () => auth()->user()->hasRole('super_admin')),
             ]);
     }
 }

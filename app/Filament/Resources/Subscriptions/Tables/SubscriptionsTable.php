@@ -2,11 +2,14 @@
 
 namespace App\Filament\Resources\Subscriptions\Tables;
 
+use App\Filament\Resources\Subscriptions\SubscriptionResource;
 use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
+use Filament\Actions\ViewAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Model;
 
 class SubscriptionsTable
 {
@@ -45,13 +48,16 @@ class SubscriptionsTable
             ->filters([
                 //
             ])
+            ->recordUrl(fn (Model $record): string => SubscriptionResource::getUrl('view', ['record' => $record]))
             ->recordActions([
-                EditAction::make(),
+                ViewAction::make(),
+                EditAction::make()
+                    ->visible(fn (Model $record) => auth()->user()->hasRole('super_admin') || $record->tenant->central_user_id === auth()->id()),
             ])
             ->toolbarActions([
                 BulkActionGroup::make([
                     DeleteBulkAction::make(),
-                ]),
+                ])->visible(fn () => auth()->user()->hasRole('super_admin')),
             ]);
     }
 }
