@@ -13,4 +13,4 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Basic multi-tenancy setup with database-per-tenant architecture.
 - Default roles and permissions with Filament Shield.
 
-[Unreleased]: https://github.com/your-username/tenancy-starterkit/compare/v1.0.0...HEAD
+[Unreleased]: https://github.com/danihidayatx/tenancy-starterkit/compare/v1.0.0...HEAD

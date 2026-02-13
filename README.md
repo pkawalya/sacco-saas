@@ -53,7 +53,7 @@ A robust, production-ready starter kit for building multi-tenant applications wi
 
 1.  **Clone the repository**
     ```bash
-    git clone https://github.com/your-username/tenancy-starterkit.git
+    git clone https://github.com/danihidayatx/tenancy-starterkit.git
     cd tenancy-starterkit
     ```
 
