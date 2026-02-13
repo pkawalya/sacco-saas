@@ -35,6 +35,22 @@ class PurchasePlan extends Page implements HasForms
 
     public ?array $data = [];
 
+    public static function canAccess(): bool
+    {
+        // Explicitly deny access to super_admin for this page.
+        // super_admin bypasses all authorization by default, so we must explicitly check and deny here.
+        if (auth()->user()->hasRole('super_admin')) {
+            return false;
+        }
+
+        return auth()->user()->hasRole('user');
+    }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return self::canAccess();
+    }
+
     public function mount(): void
     {
         $this->form->fill();

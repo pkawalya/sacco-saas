@@ -38,7 +38,7 @@ return [
     |
     */
 
-    'tenant_model' => null,
+    'tenant_model' => null, // Set to null because we use a manual, policy-based approach for tenant data scoping in the central admin panel instead of Shield's built-in multi-tenancy.
 
     /*
     |--------------------------------------------------------------------------
@@ -51,7 +51,7 @@ return [
     |
     */
 
-    'auth_provider_model' => 'App\\Models\\User',
+    'auth_provider_model' => 'App\\Models\\Central\\User',
 
     /*
     |--------------------------------------------------------------------------
