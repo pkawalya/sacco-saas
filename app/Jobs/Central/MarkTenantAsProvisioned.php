@@ -1,19 +1,18 @@
 <?php
 
-namespace App\Jobs;
+namespace App\Jobs\Central;
 
+use App\Models\Central\Tenant;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
 use Illuminate\Foundation\Bus\Dispatchable;
 use Illuminate\Queue\InteractsWithQueue;
 use Illuminate\Queue\SerializesModels;
-use Illuminate\Support\Facades\DB;
 
 /**
- * This job deletes the tenant record from the 'tenants' table in the Central database.
- * Usually executed as the final step after the tenant DB and storage have been deleted.
+ * This job marks the tenant as 'is_provisioned' after all setup processes (DB, Migration, Files) are complete.
  */
-class DeleteTenantRecord implements ShouldQueue
+class MarkTenantAsProvisioned implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels;
 
@@ -32,6 +31,15 @@ class DeleteTenantRecord implements ShouldQueue
      */
     public function handle(): void
     {
-        DB::table('tenants')->where('id', $this->tenantId)->delete();
+        $tenant = Tenant::find($this->tenantId);
+
+        if (! $tenant) {
+            return; // Skip if tenant is not found (e.g., already deleted)
+        }
+
+        $tenant->update([
+            'is_provisioned' => true,
+            'provisioned_at' => now(),
+        ]);
     }
 }

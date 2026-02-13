@@ -4,9 +4,9 @@ declare(strict_types=1);
 
 namespace App\Policies;
 
-use App\Models\Subscription;
+use App\Models\Central\Subscription;
 use Illuminate\Auth\Access\HandlesAuthorization;
-use Illuminate\Foundation\Auth\User as AuthUser;
+use App\Models\Central\User as AuthUser;
 
 class SubscriptionPolicy
 {

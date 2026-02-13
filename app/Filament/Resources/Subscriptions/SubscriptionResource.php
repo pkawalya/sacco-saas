@@ -7,7 +7,7 @@ use App\Filament\Resources\Subscriptions\Pages\EditSubscription;
 use App\Filament\Resources\Subscriptions\Pages\ListSubscriptions;
 use App\Filament\Resources\Subscriptions\Schemas\SubscriptionForm;
 use App\Filament\Resources\Subscriptions\Tables\SubscriptionsTable;
-use App\Models\Subscription;
+use App\Models\Central\Subscription;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;

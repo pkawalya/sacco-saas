@@ -2,8 +2,9 @@
 
 namespace App\Services;
 
-use App\Models\Invoice;
-use App\Models\Tenant;
+use App\Models\Central\Invoice;
+use App\Models\Central\Subscription;
+use App\Models\Central\Tenant;
 use Illuminate\Support\Facades\Bus;
 use Stancl\Tenancy\Jobs;
 
@@ -56,12 +57,21 @@ class TenantProvisioningService
             Bus::chain([
                 new Jobs\CreateDatabase($tenant),      // Create new DB
                 new Jobs\MigrateDatabase($tenant),     // Run migrations in database/migrations/tenant folder
-                new \App\Jobs\CreateFrameworkCacheDirForTenant($tenant), // Setup isolated cache folder
+                new \App\Jobs\Central\CreateFrameworkCacheDirForTenant($tenant), // Setup isolated cache folder
 
                 // Place additional jobs here (like seeding initial data, role setup, etc.)
 
-                new \App\Jobs\MarkTenantAsProvisioned($tenant->id), // Mark as finished
+                new \App\Jobs\Central\MarkTenantAsProvisioned($tenant->id), // Mark as finished
             ])->dispatch();
+
+            // 3. Activate the subscription
+            $subscription = Subscription::where('tenant_id', $tenant->id)
+                ->where('status', 'pending')
+                ->first();
+
+            if ($subscription) {
+                $subscription->update(['status' => 'active']);
+            }
 
         } catch (\Exception $e) {
             \Log::error('Provisioning failed for tenant '.$tenant->id.': '.$e->getMessage());

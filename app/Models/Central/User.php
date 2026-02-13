@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Central;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Filament\Models\Contracts\FilamentUser;

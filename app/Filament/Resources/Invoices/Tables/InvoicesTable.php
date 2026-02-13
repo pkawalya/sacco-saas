@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\Invoices\Tables;
 
-use App\Models\Invoice;
+use App\Models\Central\Invoice;
 use App\Services\TenantProvisioningService;
 use Filament\Actions\Action;
 use Filament\Actions\BulkActionGroup;
@@ -59,7 +59,7 @@ class InvoicesTable
                     ->icon('heroicon-o-check-circle')
                     ->color('success')
                     ->requiresConfirmation()
-                    ->visible(fn (Invoice $record) => $record->status === 'pending')
+                    ->visible(fn (Invoice $record) => $record->status === 'pending' && auth()->user()->hasRole('super_admin'))
                     ->action(function (Invoice $record, TenantProvisioningService $service) {
                         $record->update([
                             'status' => 'paid',

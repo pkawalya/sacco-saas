@@ -2,7 +2,7 @@
 
 namespace App\Filament\Resources\Tenants\Tables;
 
-use App\Models\Tenant;
+use App\Models\Central\Tenant;
 use App\Services\TenantDeletionService;
 use App\Services\TenantProvisioningService;
 use Filament\Actions\Action;

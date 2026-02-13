@@ -2,19 +2,20 @@
 
 namespace App\Filament\Pages;
 
-use App\Models\Invoice;
-use App\Models\Plan;
-use App\Models\Tenant;
+use App\Models\Central\Invoice;
+use App\Models\Central\Plan;
+use App\Models\Central\Subscription;
+use App\Models\Central\Tenant;
 use App\Services\TenantProvisioningService;
 use BackedEnum;
 use Filament\Forms\Components\Radio;
-use Filament\Forms\Components\Section;
 use Filament\Forms\Components\TextInput;
 use Filament\Forms\Concerns\InteractsWithForms;
 use Filament\Forms\Contracts\HasForms;
-use Filament\Forms\Form;
 use Filament\Notifications\Notification;
 use Filament\Pages\Page;
+use Filament\Schemas\Components\Section;
+use Filament\Schemas\Schema;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
@@ -39,9 +40,9 @@ class PurchasePlan extends Page implements HasForms
         $this->form->fill();
     }
 
-    public function form(Form $form): Form
+    public function form(Schema $schema): Schema
     {
-        return $form
+        return $schema
             ->schema([
                 Section::make('Select a Plan')
                     ->schema([
@@ -99,6 +100,15 @@ class PurchasePlan extends Page implements HasForms
             'currency' => $plan->currency,
             'status' => 'pending',
             'description' => "Subscription for {$plan->name} Plan",
+        ]);
+
+        // 3. Create Pending Subscription
+        Subscription::create([
+            'tenant_id' => $tenant->id,
+            'plan_id' => $plan->id,
+            'status' => 'pending',
+            'starts_at' => now(),
+            'ends_at' => now()->addMonths($plan->duration_months),
         ]);
 
         Notification::make()

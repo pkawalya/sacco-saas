@@ -7,7 +7,7 @@ use App\Filament\Resources\Invoices\Pages\EditInvoice;
 use App\Filament\Resources\Invoices\Pages\ListInvoices;
 use App\Filament\Resources\Invoices\Schemas\InvoiceForm;
 use App\Filament\Resources\Invoices\Tables\InvoicesTable;
-use App\Models\Invoice;
+use App\Models\Central\Invoice;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;

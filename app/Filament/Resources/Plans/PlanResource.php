@@ -7,7 +7,7 @@ use App\Filament\Resources\Plans\Pages\EditPlan;
 use App\Filament\Resources\Plans\Pages\ListPlans;
 use App\Filament\Resources\Plans\Schemas\PlanForm;
 use App\Filament\Resources\Plans\Tables\PlansTable;
-use App\Models\Plan;
+use App\Models\Central\Plan;
 use BackedEnum;
 use Filament\Resources\Resource;
 use Filament\Schemas\Schema;

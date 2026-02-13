@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Models;
+namespace App\Models\Central;
 
 use Filament\Models\Contracts\HasName;
 use Stancl\Tenancy\Contracts\TenantWithDatabase;

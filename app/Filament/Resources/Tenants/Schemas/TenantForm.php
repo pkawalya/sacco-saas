@@ -2,8 +2,8 @@
 
 namespace App\Filament\Resources\Tenants\Schemas;
 
-use App\Models\Plan;
-use App\Models\User;
+use App\Models\Central\Plan;
+use App\Models\Central\User;
 use Filament\Forms\Components\DateTimePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\TextInput;

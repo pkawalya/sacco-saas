@@ -2,9 +2,9 @@
 
 namespace App\Services;
 
-use App\Jobs\DeleteTenantRecord;
-use App\Jobs\DeleteTenantStorage;
-use App\Models\Tenant;
+use App\Jobs\Central\DeleteTenantRecord;
+use App\Jobs\Central\DeleteTenantStorage;
+use App\Models\Central\Tenant;
 use Illuminate\Support\Facades\Bus;
 use Illuminate\Support\Facades\DB;
 use Stancl\Tenancy\Jobs;
