@@ -39,7 +39,7 @@ test('tenant provisioning service dispatches correct jobs when invoice is paid',
 
     // Assert domain was created
     expect($tenant->domains()->count())->toBe(1);
-    expect($tenant->domains()->first()->domain)->toBe('provision-test.'.config('tenancy.central_domains.0'));
+    expect($tenant->domains()->first()->domain)->toBe('provision-test.'.config('tenancy.central_domain'));
 
     // Assert Jobs were chained
     Bus::assertChained([
@@ -48,10 +48,6 @@ test('tenant provisioning service dispatches correct jobs when invoice is paid',
         CreateFrameworkCacheDirForTenant::class,
         MarkTenantAsProvisioned::class,
     ]);
-
-    // Check subscription status updated to active (this happens after jobs usually? No, in the service it happens after dispatch)
-    // Wait, let's check service code again.
-    // It updates subscription status *after* dispatching the chain.
 
     expect($subscription->fresh()->status)->toBe('active');
 });

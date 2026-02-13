@@ -27,6 +27,11 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
+            ->domains([
+                config('tenancy.central_domain'),
+
+                // you can add more domains here and adjusting the tenancy config for multiple central domains
+            ])
             ->viteTheme('resources/css/filament/admin/theme.css')
             ->login()
             ->registration() // Enabled registration

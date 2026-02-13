@@ -16,10 +16,7 @@ return [
      *
      * Only relevant if you're using the domain or subdomain identification middleware.
      */
-    'central_domains' => [
-        '127.0.0.1',
-        'localhost',
-    ],
+    'central_domain' => env('CENTRAL_DOMAIN', 'central.localhost'),
 
     /**
      * Tenancy bootstrappers are executed when tenancy is initialized.
@@ -52,7 +49,7 @@ return [
          * prefix + tenant_id + suffix.
          */
         'prefix' => 'tenant',
-        'suffix' => '',
+        'suffix' => '-',
 
         /**
          * TenantDatabaseManagers are classes that handle the creation & deletion of tenant databases.

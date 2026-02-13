@@ -24,4 +24,18 @@ class TenantFactory extends Factory
             'name' => $this->faker->company(),
         ];
     }
+
+    /**
+     * Configure the model factory.
+     *
+     * @return $this
+     */
+    public function configure()
+    {
+        return $this->afterCreating(function (Tenant $tenant) {
+            $tenant->domains()->create([
+                'domain' => $tenant->id.'.'.config('tenancy.central_domain'),
+            ]);
+        });
+    }
 }

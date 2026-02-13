@@ -67,7 +67,7 @@ class PurchasePlan extends Page implements HasForms
                             ->label('Subdomain')
                             ->required()
                             ->prefix('https://')
-                            ->suffix('.'.config('tenancy.central_domains.0'))
+                            ->suffix('.'.config('tenancy.central_domain'))
                             ->unique(table: 'tenants', column: 'id')
                             ->regex('/^[a-z0-9\-]+$/')
                             ->helperText('Only lowercase letters, numbers, and hyphens.'),
