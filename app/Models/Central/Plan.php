@@ -4,6 +4,7 @@ namespace App\Models\Central;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Stancl\Tenancy\Database\Concerns\CentralConnection;
 
 /**
  * Plan model defines the available subscription packages.
@@ -11,7 +12,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Plan extends Model
 {
-    use HasFactory;
+    use CentralConnection, HasFactory;
 
     protected $fillable = [
         'name',

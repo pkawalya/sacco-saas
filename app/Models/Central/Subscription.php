@@ -4,6 +4,7 @@ namespace App\Models\Central;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Stancl\Tenancy\Database\Concerns\CentralConnection;
 
 /**
  * Subscription model connects a Tenant with a Plan.
@@ -11,7 +12,7 @@ use Illuminate\Database\Eloquent\Model;
  */
 class Subscription extends Model
 {
-    use HasFactory;
+    use CentralConnection, HasFactory;
 
     protected $fillable = [
         'tenant_id',

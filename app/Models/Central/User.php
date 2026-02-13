@@ -9,11 +9,12 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Spatie\Permission\Traits\HasRoles;
+use Stancl\Tenancy\Database\Concerns\CentralConnection;
 
 class User extends Authenticatable implements FilamentUser
 {
-    /** @use HasFactory<\Database\Factories\UserFactory> */
-    use HasFactory, HasRoles, Notifiable;
+    /** @use HasFactory<\Database\Factories\Central\UserFactory> */
+    use CentralConnection, HasFactory, HasRoles, Notifiable;
 
     /**
      * The attributes that are mass assignable.

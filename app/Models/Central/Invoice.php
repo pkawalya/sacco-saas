@@ -4,13 +4,14 @@ namespace App\Models\Central;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Stancl\Tenancy\Database\Concerns\CentralConnection;
 
 /**
  * Invoice model records every payment transaction from a Tenant to the Central app.
  */
 class Invoice extends Model
 {
-    use HasFactory;
+    use CentralConnection, HasFactory;
 
     protected $fillable = [
         'invoice_number',

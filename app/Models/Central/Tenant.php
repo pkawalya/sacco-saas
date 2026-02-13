@@ -3,7 +3,9 @@
 namespace App\Models\Central;
 
 use Filament\Models\Contracts\HasName;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Stancl\Tenancy\Contracts\TenantWithDatabase;
+use Stancl\Tenancy\Database\Concerns\CentralConnection;
 use Stancl\Tenancy\Database\Concerns\HasDatabase;
 use Stancl\Tenancy\Database\Concerns\HasDomains;
 use Stancl\Tenancy\Database\Models\Tenant as BaseTenant;
@@ -14,7 +16,7 @@ use Stancl\Tenancy\Database\Models\Tenant as BaseTenant;
  */
 class Tenant extends BaseTenant implements HasName, TenantWithDatabase
 {
-    use HasDatabase, HasDomains;
+    use CentralConnection, HasDatabase, HasDomains, HasFactory;
 
     /**
      * Defines custom columns stored in the 'tenants' table (Central DB).
