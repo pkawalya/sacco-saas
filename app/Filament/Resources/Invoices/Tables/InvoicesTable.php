@@ -9,6 +9,7 @@ use Filament\Actions\BulkActionGroup;
 use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Notifications\Notification;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
 
@@ -56,7 +57,7 @@ class InvoicesTable
                 EditAction::make(),
                 Action::make('markAsPaid')
                     ->label('Mark as Paid')
-                    ->icon('heroicon-o-check-circle')
+                    ->icon(Heroicon::OutlinedCheckCircle)
                     ->color('success')
                     ->requiresConfirmation()
                     ->visible(fn (Invoice $record) => $record->status === 'pending' && auth()->user()->hasRole('super_admin'))

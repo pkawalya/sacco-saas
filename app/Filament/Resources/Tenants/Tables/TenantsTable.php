@@ -12,6 +12,7 @@ use Filament\Actions\DeleteBulkAction;
 use Filament\Actions\EditAction;
 use Filament\Actions\ViewAction;
 use Filament\Notifications\Notification;
+use Filament\Support\Icons\Heroicon;
 use Filament\Tables\Columns\IconColumn;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Table;
@@ -57,7 +58,7 @@ class TenantsTable
                     ->visible(fn () => auth()->user()->hasRole('super_admin')),
                 Action::make('provision')
                     ->label('Provision')
-                    ->icon('heroicon-o-cpu-chip')
+                    ->icon(Heroicon::OutlinedCpuChip)
                     ->color('success')
                     ->requiresConfirmation()
                     ->hidden(fn (Tenant $record) => $record->is_provisioned)
@@ -71,7 +72,7 @@ class TenantsTable
                     }),
                 Action::make('purge')
                     ->label('Purge')
-                    ->icon('heroicon-o-trash')
+                    ->icon(Heroicon::OutlinedTrash)
                     ->color('danger')
                     ->requiresConfirmation()
                     ->modalDescription('This will permanently delete the tenant database, storage, and record. This action cannot be undone.')
