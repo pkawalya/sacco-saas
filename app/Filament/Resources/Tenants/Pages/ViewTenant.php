@@ -2,6 +2,7 @@
 
 namespace App\Filament\Resources\Tenants\Pages;
 
+use App\Filament\Resources\Tenants\Concerns\HasTenantAdminActions;
 use App\Filament\Resources\Tenants\TenantResource;
 use Filament\Actions;
 use Filament\Forms\Components\Group;
@@ -13,11 +14,14 @@ use Filament\Resources\Pages\ViewRecord;
 
 class ViewTenant extends ViewRecord
 {
+    use HasTenantAdminActions;
+
     protected static string $resource = TenantResource::class;
 
     protected function getHeaderActions(): array
     {
         return [
+            ...$this->getTenantAdminHeaderActions(),
             Actions\EditAction::make()
                 ->visible(fn () => auth()->user()->hasRole('super_admin')),
         ];

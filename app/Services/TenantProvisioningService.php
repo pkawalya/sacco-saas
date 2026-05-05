@@ -48,8 +48,10 @@ class TenantProvisioningService
     {
         try {
             // 1. Create domain for the tenant if it doesn't exist
-            // Using the tenant ID as subdomain if domain_name is not explicitly set in 'data'
-            $domain = $tenant->domain_name ?? $tenant->id.'.'.config('tenancy.central_domain');
+            // Tenant subdomain: {id}.wakacosacco.com (base domain extracted from central_domain)
+            $centralDomain = config('tenancy.central_domain');
+            $baseDomain = preg_replace('/^[^.]+\./', '', $centralDomain);
+            $domain = $tenant->domain_name ?? $tenant->id.'.'.$baseDomain;
 
             if (! $tenant->domains()->where('domain', $domain)->exists()) {
                 $tenant->domains()->create([
