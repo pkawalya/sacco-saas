@@ -1,0 +1,36 @@
+# Providers
+providers = ["php", "node"]
+
+# PHP version & extensions
+[phases.setup]
+nixPkgs = [
+    "php84",
+    "php84Extensions.pdo_mysql",
+    "php84Extensions.mbstring",
+    "php84Extensions.exif",
+    "php84Extensions.pcntl",
+    "php84Extensions.bcmath",
+    "php84Extensions.gd",
+    "php84Extensions.zip",
+    "php84Extensions.intl",
+    "php84Extensions.opcache"
+]
+
+# Install dependencies
+[phases.install]
+cmds = [
+    "composer install --no-dev --optimize-autoloader --no-interaction",
+    "npm ci"
+]
+
+# Build frontend assets & cache components
+[phases.build]
+cmds = [
+    "npm run build",
+    "php artisan icons:cache",
+    "php artisan filament:cache-components"
+]
+
+# Start command — runs migrations then serves
+[start]
+cmd = "php artisan migrate --force && php artisan tenants:migrate --force && php artisan storage:link && php artisan config:cache && php artisan route:cache && php artisan view:cache && php artisan event:cache && php artisan serve --host=0.0.0.0 --port=80"
