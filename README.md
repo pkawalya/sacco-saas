@@ -9,6 +9,7 @@ A robust, production-ready starter kit for building multi-tenant applications wi
 - [Features](#features)
 - [Prerequisites](#prerequisites)
 - [Installation](#installation)
+- [Seeding & Demo Accounts](#seeding--demo-accounts)
 - [Usage](#usage)
 - [Automating Tenant Provisioning with Payments](#automating-tenant-provisioning-with-payments-stripe-example)
 - [Testing](#testing)
@@ -104,6 +105,106 @@ A robust, production-ready starter kit for building multi-tenant applications wi
     ```bash
     php artisan shield:super-admin
     ```
+
+## Seeding & Demo Accounts
+
+The application ships with comprehensive seeders that populate both central and tenant databases with realistic SACCO data.
+
+### Running All Seeders
+
+```bash
+# 1. Seed central database (roles, plans, users, tenants)
+php artisan db:seed --class=RoleSeeder
+php artisan db:seed --class=PlanSeeder
+php artisan db:seed --class=UserSeeder
+php artisan db:seed --class=CentralDataSeeder
+
+# 2. Seed staff users into all tenant databases (admin per tenant)
+php artisan tenants:seed-users
+
+# 3. Seed demo members + staff into all tenant databases
+php artisan tenants:seed-demo --members=30
+```
+
+> **Re-seeding tip:** Use `php artisan tenants:seed-demo --fresh` to truncate and reseed tenant data, and `--force` on `tenants:seed-users` to reset passwords.
+
+### Central Admin Credentials
+
+All central users use password: **`password`**
+
+| Email | Name | Role | Tenant Owner |
+|---|---|---|---|
+| `admin@sacco.test` | Super Admin | Super Admin (full access) | — |
+| `user@sacco.test` | John Doe | User (tenant owner) | Testing SACCO |
+| `jane@sacco.test` | Jane Achieng | User (tenant owner) | Kampala Teachers SACCO |
+| `moses@sacco.test` | Moses Kasule | User (tenant owner) | Gulu Farmers Cooperative |
+| `grace@sacco.test` | Grace Nambi | User (tenant owner) | Mbarara Women Savings Group |
+| `david@sacco.test` | David Opio | User (tenant owner) | Jinja Traders Credit Union |
+| `sarah@sacco.test` | Sarah Nakato | User (tenant owner) | Entebbe Microfinance Bank |
+
+Access the admin panel at: `http://localhost:8000/admin`
+
+### Tenant Panel Credentials
+
+All tenant users use password: **`password`**
+
+Each SACCO tenant gets 4 staff users seeded automatically:
+
+| URL | Owner (Admin) | Manager | Staff | Teller |
+|---|---|---|---|---|
+| `kampala-teachers.localhost:8000/app` | `jane@sacco.test` | `manager@kampala-teachers.sacco` | `loans@kampala-teachers.sacco` | `teller@kampala-teachers.sacco` |
+| `gulu-farmers.localhost:8000/app` | `moses@sacco.test` | `manager@gulu-farmers.sacco` | `loans@gulu-farmers.sacco` | `teller@gulu-farmers.sacco` |
+| `mbarara-women.localhost:8000/app` | `grace@sacco.test` | `manager@mbarara-women.sacco` | `loans@mbarara-women.sacco` | `teller@mbarara-women.sacco` |
+| `jinja-traders.localhost:8000/app` | `david@sacco.test` | `manager@jinja-traders.sacco` | `loans@jinja-traders.sacco` | `teller@jinja-traders.sacco` |
+| `entebbe-mfb.localhost:8000/app` | `sarah@sacco.test` | `manager@entebbe-microfinance.sacco` | `loans@entebbe-microfinance.sacco` | `teller@entebbe-microfinance.sacco` |
+
+**Role access matrix:**
+
+| Role | Members | Savings/Loans | Teller Ops | Finance/Compliance | Staff Mgmt |
+|---|---|---|---|---|---|
+| Admin | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Manager | ✅ | ✅ | ✅ | ✅ | ❌ |
+| Staff | ✅ | ✅ | ✅ | ❌ | ❌ |
+| Teller | ✅ | ✅ | ✅ | ❌ | ❌ |
+
+### Seeded Central Data
+
+| Entity | Count | Details |
+|---|---|---|
+| Users | 7 | Super admin + 5 SACCO owners + 1 regular |
+| Plans | 3 | Starter ($49/mo), Growth ($149/mo), Enterprise ($399/mo) |
+| Tenants | 6 | Testing + 5 Ugandan SACCOs |
+| Subscriptions | 5 | Active subscriptions |
+| Invoices | 4 | Paid invoices |
+| Orders | 4 | Demo sign-up requests |
+
+### Seeded Tenant Data (per SACCO, via `tenants:seed-demo`)
+
+| Entity | Count | Details |
+|---|---|---|
+| Staff Users | 4 | Admin, Manager, Loans Officer, Teller |
+| Members | 30 | ~65% active, ~20% applicant, ~8% dormant, ~5% suspended, ~2% exited |
+
+### Useful Tenant Dev Commands
+
+```bash
+# Seed/reset all tenant admin users
+php artisan tenants:seed-users                          # safe to re-run
+php artisan tenants:seed-users --force                  # also resets passwords
+
+# Seed demo members + staff into all tenants
+php artisan tenants:seed-demo --members=50              # default: 30
+php artisan tenants:seed-demo --fresh                   # truncate first
+
+# Mark inactive members as dormant (EOD batch)
+php artisan members:mark-dormant [--dry-run] [--days=180]
+
+# Run tenant-specific migrations
+php artisan tenants:migrate
+php artisan tenants:migrate --tenants=kampala-teachers
+```
+
+---
 
 ## Usage
 
@@ -250,10 +351,15 @@ Models and logic related to the management of the SaaS platform itself.
 -   **Plan/Subscription/Invoice:** Billing-related models.
 
 ### Tenant Context (`App\Models\Tenant`)
-Models and logic specific to the tenant's application.
--   *Currently empty boilerplate.*
--   Define your application's specific models here (e.g., `Product`, `Order`, `Post`).
--   Migrations for these models go in `database/migrations/tenant`.
+Models and logic specific to each SACCO tenant's operations.
+-   **Member Management:** `Member`, `MemberGroup`, `MemberDocument`, `MemberShare`, `MemberStateHistory`
+-   **Savings & Deposits:** `SavingsProduct`, `SavingsAccount`, `SavingsTransaction`, `FixedDeposit`, `InterestAccrual`
+-   **Lending:** `LoanProduct`, `Loan`, `LoanApplication`, `LoanApproval`, `LoanCollateral`, `LoanGuarantor`, `LoanRepayment`, `AmortisationSchedule`
+-   **Accounting:** `ChartOfAccount`, `JournalEntry`, `JournalLine`, `AccountingPeriod`, `Budget`, `CostCentre`, `CostAllocation`
+-   **Compliance & Risk:** `AmlAlert`, `KycScreening`, `CrbSubmission`, `CrbInquiry`, `EclComputation`, `EclStaging`, `BaselReport`
+-   **Collections:** `CollectionsWorklist`, `CollectionsActivity`, `DemandLetter`, `LegalCase`, `EscalationChain`
+-   **Operations:** `User`, `Agent`, `AgentTransaction`, `AtmTerminal`, `Card`, `NotificationTemplate`, `NotificationLog`
+-   Migrations for tenant models go in `database/migrations/tenant`.
 
 ### Routing
 -   `routes/web.php`: Routes for the Central Application (Landing page, Admin Panel).

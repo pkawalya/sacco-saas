@@ -27,6 +27,15 @@ class User extends Authenticatable implements FilamentUser
         'email',
         'password',
         'ui_settings',
+        'is_approved',
+        'approved_at',
+        'approved_by',
+        'failed_login_attempts',
+        'locked_until',
+        'password_changed_at',
+        'must_change_password',
+        'last_login_ip',
+        'last_login_at',
     ];
 
     /** @var array<string, mixed> */
@@ -50,6 +59,7 @@ class User extends Authenticatable implements FilamentUser
         'modal_width' => 'lg',
         'notifications_position' => 'top-right',
         'gray_color' => 'slate',
+        'currency' => 'UGX',
     ];
 
     /**
@@ -64,7 +74,69 @@ class User extends Authenticatable implements FilamentUser
 
     public function canAccessPanel(Panel $panel): bool
     {
-        return $this->hasVerifiedEmail();
+        // Super admins always have access to all panels
+        if ($this->hasRole('super_admin')) {
+            return true;
+        }
+
+        // Check account lockout
+        if ($this->isLocked()) {
+            return false;
+        }
+
+        // Approved and verified users can access any panel
+        return $this->is_approved && $this->hasVerifiedEmail();
+    }
+
+    /**
+     * Check if the account is locked.
+     */
+    public function isLocked(): bool
+    {
+        if (! $this->locked_until) {
+            return false;
+        }
+
+        if ($this->locked_until->isPast()) {
+            // Auto-unlock expired lockouts
+            $this->forceFill(['locked_until' => null, 'failed_login_attempts' => 0])->save();
+
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
+     * Check if the user account has been approved.
+     */
+    public function isApproved(): bool
+    {
+        return (bool) $this->is_approved;
+    }
+
+    /**
+     * Approve the user account.
+     */
+    public function approve(?int $approvedBy = null): void
+    {
+        $this->update([
+            'is_approved' => true,
+            'approved_at' => now(),
+            'approved_by' => $approvedBy ?? auth()->id(),
+        ]);
+    }
+
+    /**
+     * Revoke approval from the user account.
+     */
+    public function revokeApproval(): void
+    {
+        $this->update([
+            'is_approved' => false,
+            'approved_at' => null,
+            'approved_by' => null,
+        ]);
     }
 
     /**
@@ -86,6 +158,12 @@ class User extends Authenticatable implements FilamentUser
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'ui_settings' => 'array',
+            'is_approved' => 'boolean',
+            'approved_at' => 'datetime',
+            'locked_until' => 'datetime',
+            'password_changed_at' => 'datetime',
+            'must_change_password' => 'boolean',
+            'last_login_at' => 'datetime',
         ];
     }
 

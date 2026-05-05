@@ -38,6 +38,16 @@ class UISettings extends Page implements HasForms
     /** @var array<string, mixed> */
     public ?array $data = [];
 
+    public static function canAccess(): bool
+    {
+        return auth()->user()?->hasRole('super_admin') ?? false;
+    }
+
+    public static function shouldRegisterNavigation(): bool
+    {
+        return self::canAccess();
+    }
+
     public function mount(): void
     {
         /** @var User $user */
@@ -325,6 +335,29 @@ class UISettings extends Page implements HasForms
                             ->label('Unsaved Changes Alerts')
                             ->helperText('Show a warning when navigating away from a page with unsaved form changes.')
                             ->default(true),
+                    ]),
+                // ═══════════ CURRENCY ════════════════════════
+                Section::make('Currency')
+                    ->description('Set the default currency used throughout the system for displaying monetary values.')
+                    ->icon(Heroicon::OutlinedBanknotes)
+                    ->collapsible()
+                    ->schema([
+                        Select::make('currency')
+                            ->label('Currency')
+                            ->options([
+                                'UGX' => '🇺🇬 UGX — Ugandan Shilling',
+                                'USD' => '🇺🇸 USD — US Dollar',
+                                'EUR' => '🇪🇺 EUR — Euro',
+                                'GBP' => '🇬🇧 GBP — British Pound',
+                                'KES' => '🇰🇪 KES — Kenyan Shilling',
+                                'TZS' => '🇹🇿 TZS — Tanzanian Shilling',
+                                'RWF' => '🇷🇼 RWF — Rwandan Franc',
+                                'ZAR' => '🇿🇦 ZAR — South African Rand',
+                            ])
+                            ->default('UGX')
+                            ->native(false)
+                            ->searchable()
+                            ->helperText('This currency is used for displaying balances, contributions, and loan values.'),
                     ]),
             ])
             ->statePath('data');

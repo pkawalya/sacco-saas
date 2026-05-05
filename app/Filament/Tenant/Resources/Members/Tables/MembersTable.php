@@ -27,14 +27,12 @@ class MembersTable
                     ->label('Member #')
                     ->searchable()
                     ->sortable()
-                    ->copyable()
-                    ->fixed(),
+                    ->copyable(),
 
                 TextColumn::make('full_name')
                     ->label('Full Name')
                     ->searchable(['first_name', 'last_name', 'middle_name'])
-                    ->sortable(['first_name'])
-                    ->fixed(),
+                    ->sortable(['first_name']),
 
                 TextColumn::make('status')
                     ->badge()
@@ -46,8 +44,7 @@ class MembersTable
                         'deceased' => 'gray',
                         'exited' => 'info',
                         default => 'gray',
-                    })
-                    ->fixed(),
+                    }),
 
                 // ─── SCROLLABLE DATA COLUMNS ─────────
                 ImageColumn::make('photo_path')

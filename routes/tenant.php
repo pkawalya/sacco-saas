@@ -23,7 +23,6 @@ Route::middleware([
     InitializeTenancyByDomain::class,
     PreventAccessFromCentralDomains::class,
 ])->group(function () {
-    Route::get('/', function () {
-        return 'This is your multi-tenant application. The id of the current tenant is '.tenant('id');
-    });
+    // Tenant-specific web routes go here.
+    // The Filament tenant panel (/app) is registered by TenantPanelProvider.
 });

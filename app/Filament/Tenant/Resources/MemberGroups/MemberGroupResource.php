@@ -2,12 +2,13 @@
 
 namespace App\Filament\Tenant\Resources\MemberGroups;
 
-use App\Filament\Tenant\Concerns\BelongsToModule;
+use App\Filament\Tenant\Concerns\BelongsToRole;
 use App\Filament\Tenant\Resources\MemberGroups\Pages\CreateMemberGroup;
 use App\Filament\Tenant\Resources\MemberGroups\Pages\EditMemberGroup;
 use App\Filament\Tenant\Resources\MemberGroups\Pages\ListMemberGroups;
 use App\Filament\Tenant\Resources\MemberGroups\Pages\ViewMemberGroup;
 use App\Models\Tenant\MemberGroup;
+use App\Models\Tenant\User;
 use BackedEnum;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Textarea;
@@ -24,11 +25,13 @@ use Filament\Tables\Table;
 
 class MemberGroupResource extends Resource
 {
-    use BelongsToModule;
+    use BelongsToRole;
 
     protected static ?string $model = MemberGroup::class;
 
     protected static string $moduleKey = 'member_management';
+
+    protected static array $allowedRoles = [User::ROLE_ADMIN, User::ROLE_MANAGER, User::ROLE_STAFF];
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUserGroup;
 
@@ -73,14 +76,12 @@ class MemberGroupResource extends Resource
                 TextColumn::make('group_code')
                     ->label('Code')
                     ->searchable()
-                    ->sortable()
-                    ->fixed(),
+                    ->sortable(),
 
                 TextColumn::make('group_name')
                     ->label('Group Name')
                     ->searchable()
-                    ->sortable()
-                    ->fixed(),
+                    ->sortable(),
 
                 TextColumn::make('status')
                     ->badge()
@@ -89,8 +90,7 @@ class MemberGroupResource extends Resource
                         'inactive' => 'warning',
                         'dissolved' => 'danger',
                         default => 'gray',
-                    })
-                    ->fixed(),
+                    }),
 
                 TextColumn::make('members_count')
                     ->counts('members')

@@ -24,6 +24,11 @@ class SubscriptionResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'Subscription';
 
+    public static function canAccess(): bool
+    {
+        return auth()->user()?->hasRole('super_admin') ?? false;
+    }
+
     public static function form(Schema $schema): Schema
     {
         return SubscriptionForm::configure($schema);

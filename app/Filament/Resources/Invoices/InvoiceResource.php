@@ -23,6 +23,11 @@ class InvoiceResource extends Resource
 
     protected static ?string $recordTitleAttribute = 'Invoice';
 
+    public static function canCreate(): bool
+    {
+        return auth()->user()?->hasRole('super_admin') ?? false;
+    }
+
     public static function form(Schema $schema): Schema
     {
         return InvoiceForm::configure($schema);

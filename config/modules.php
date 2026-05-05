@@ -76,4 +76,32 @@ return [
         'stage' => 2,
         'icon' => 'heroicon-o-exclamation-triangle',
     ],
+
+    'digital_channels' => [
+        'label' => 'Digital Channels',
+        'description' => 'Branch teller operations, mobile banking, USSD, agent banking, offline sync',
+        'stage' => 3,
+        'icon' => 'heroicon-o-device-phone-mobile',
+    ],
+
+    'advanced_analytics' => [
+        'label' => 'Advanced Analytics',
+        'description' => 'IFRS 9 ECL, advanced reporting, CRB integration, group lending',
+        'stage' => 4,
+        'icon' => 'heroicon-o-chart-bar-square',
+    ],
+
+    'enhanced_kyc' => [
+        'label' => 'Enhanced KYC',
+        'description' => 'Tiered KYC, PEP/sanctions screening, NIRA/IPRS API integration',
+        'stage' => 4,
+        'icon' => 'heroicon-o-shield-check',
+    ],
+
+    'mfb_upgrade' => [
+        'label' => 'MFB Upgrade',
+        'description' => 'Current accounts, FX, card management, ATM, interbank settlement, Basel III',
+        'stage' => 5,
+        'icon' => 'heroicon-o-building-library',
+    ],
 ];

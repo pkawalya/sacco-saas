@@ -35,7 +35,11 @@ class PlansTable
                     ->sortable(),
                 TextColumn::make('modules')
                     ->label('Modules')
-                    ->formatStateUsing(fn (?array $state): string => $state ? count($state).' modules' : '—')
+                    ->formatStateUsing(function (mixed $state): string {
+                        $modules = is_array($state) ? $state : json_decode((string) $state, true);
+
+                        return is_array($modules) ? count($modules).' modules' : '—';
+                    })
                     ->color('primary'),
                 TextColumn::make('price')
                     ->money()

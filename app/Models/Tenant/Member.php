@@ -2,7 +2,10 @@
 
 namespace App\Models\Tenant;
 
+use App\Models\Tenant\Concerns\Auditable;
+use Database\Factories\Tenant\MemberFactory;
 use Illuminate\Database\Eloquent\Builder;
+use Illuminate\Database\Eloquent\Factories\Factory;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsToMany;
@@ -20,7 +23,38 @@ use Illuminate\Database\Eloquent\SoftDeletes;
  */
 class Member extends Model
 {
-    use HasFactory, SoftDeletes;
+    use Auditable, HasFactory, SoftDeletes;
+
+    protected static function newFactory(): Factory
+    {
+        return MemberFactory::new();
+    }
+
+    protected static function booted(): void
+    {
+        static::creating(function (Member $member) {
+            if (empty($member->member_number)) {
+                $member->member_number = static::generateMemberNumber();
+            }
+        });
+    }
+
+    /**
+     * Generate member number based on tenant format.
+     */
+    public static function generateMemberNumber(): string
+    {
+        $format = tenancy()->tenant->member_number_format ?? 'MEM-{year}{sequence:6}';
+        $year = date('y'); // 2 digits
+        $sequence = static::count() + 1; // Next sequence
+
+        $number = str_replace('{year}', $year, $format);
+        $number = preg_replace_callback('/\{sequence:(\d+)\}/', function ($matches) use ($sequence) {
+            return str_pad($sequence, (int) $matches[1], '0', STR_PAD_LEFT);
+        }, $number);
+
+        return $number;
+    }
 
     public const STATUS_APPLICANT = 'applicant';
 
@@ -68,6 +102,12 @@ class Member extends Model
         'nok_name',
         'nok_relationship',
         'nok_contact',
+        'nok_gender',
+        'nok_national_id_number',
+        'nok_national_id_document',
+        'nok_marital_status',
+        'member_intention',
+        'willing_weekly_savings_amount',
         'member_category',
         'referral_source',
         'kyc_score',
@@ -91,6 +131,7 @@ class Member extends Model
             'kyc_threshold' => 'integer',
             'approved_at' => 'datetime',
             'dormant_at' => 'datetime',
+            'willing_weekly_savings_amount' => 'decimal:2',
         ];
     }
 
@@ -101,7 +142,7 @@ class Member extends Model
      */
     public function getFullNameAttribute(): string
     {
-        return trim("{$this->first_name} {$this->middle_name} {$this->last_name}");
+        return implode(' ', array_filter([$this->first_name, $this->middle_name, $this->last_name]));
     }
 
     /**
@@ -134,6 +175,26 @@ class Member extends Model
         return $this->belongsToMany(MemberGroup::class, 'member_group_member')
             ->withPivot('role')
             ->withTimestamps();
+    }
+
+    public function savingsAccounts(): HasMany
+    {
+        return $this->hasMany(SavingsAccount::class);
+    }
+
+    public function fixedDeposits(): HasMany
+    {
+        return $this->hasMany(FixedDeposit::class);
+    }
+
+    public function loans(): HasMany
+    {
+        return $this->hasMany(Loan::class);
+    }
+
+    public function loanApplications(): HasMany
+    {
+        return $this->hasMany(LoanApplication::class);
     }
 
     // ─── Scopes ─────────────────────────────────

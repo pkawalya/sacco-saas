@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Tenant\Pages\TenantDashboard;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Http\Middleware\AuthenticateSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
@@ -27,6 +28,8 @@ class TenantPanelProvider extends PanelProvider
             ->id('tenant')
             ->path('app')
             ->login()
+            ->passwordReset()
+            ->authGuard('tenant')
             ->colors([
                 'primary' => Color::Blue,
             ])
@@ -38,6 +41,9 @@ class TenantPanelProvider extends PanelProvider
             ->discoverResources(in: app_path('Filament/Tenant/Resources'), for: 'App\\Filament\\Tenant\\Resources')
             ->discoverPages(in: app_path('Filament/Tenant/Pages'), for: 'App\\Filament\\Tenant\\Pages')
             ->discoverWidgets(in: app_path('Filament/Tenant/Widgets'), for: 'App\\Filament\\Tenant\\Widgets')
+            ->pages([
+                TenantDashboard::class,
+            ])
 
             // ─── Middleware ─────────────────────────────
             ->middleware([

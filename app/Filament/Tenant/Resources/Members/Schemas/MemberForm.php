@@ -57,6 +57,7 @@ class MemberForm
                             ->default('national_id')
                             ->required(),
                         TextInput::make('national_id_number')
+                            ->label('National NIN Number')
                             ->required()
                             ->unique(ignoreRecord: true)
                             ->maxLength(50),
@@ -66,6 +67,30 @@ class MemberForm
                             ->avatar()
                             ->directory('member-photos')
                             ->columnSpanFull(),
+                    ]),
+
+                Section::make('KYC Documents')
+                    ->columns(1)
+                    ->schema([
+                        Repeater::make('kyc_documents')
+                            ->label('KYC Documents')
+                            ->schema([
+                                TextInput::make('document_name')
+                                    ->label('Document Name')
+                                    ->required()
+                                    ->placeholder('e.g. National ID, Passport'),
+                                FileUpload::make('document_file')
+                                    ->label('Document Upload')
+                                    ->required()
+                                    ->acceptedFileTypes(['image/jpeg', 'image/png', 'application/pdf'])
+                                    ->maxSize(5120) // 5MB
+                                    ->directory('kyc-documents')
+                                    ->uploadProgressIndicatorPosition('left'),
+                            ])
+                            ->columns(2)
+                            ->addActionLabel('Add KYC Document')
+                            ->collapsible()
+                            ->itemLabel(fn (array $state): ?string => $state['document_name'] ?? null),
                     ]),
 
                 Section::make('Contact Details')
@@ -136,6 +161,76 @@ class MemberForm
                             ->maxLength(20),
                     ]),
 
+                Section::make('Next of Kin Information')
+                    ->columns(2)
+                    ->schema([
+                        TextInput::make('nok_name')
+                            ->label('Next of Kin Full Name')
+                            ->required()
+                            ->maxLength(150),
+                        Select::make('nok_gender')
+                            ->label('Next of Kin Gender')
+                            ->options([
+                                'male' => 'Male',
+                                'female' => 'Female',
+                                'other' => 'Other',
+                            ])
+                            ->required(),
+                        Select::make('nok_relationship')
+                            ->label('Next of Kin Relationship to Member')
+                            ->options([
+                                'spouse' => 'Spouse',
+                                'parent' => 'Parent',
+                                'sibling' => 'Sibling',
+                                'child' => 'Child',
+                                'other' => 'Other',
+                            ])
+                            ->required(),
+                        TextInput::make('nok_national_id_number')
+                            ->label('Next of Kin National ID Number (NIN)')
+                            ->required()
+                            ->maxLength(50)
+                            ->placeholder('e.g. CM1234567890123'),
+                        FileUpload::make('nok_national_id_document')
+                            ->label('Next of Kin National ID Document Upload')
+                            ->required()
+                            ->acceptedFileTypes(['image/jpeg', 'image/png', 'application/pdf'])
+                            ->maxSize(5120) // 5MB
+                            ->directory('nok-documents')
+                            ->uploadProgressIndicatorPosition('left'),
+                        Select::make('nok_marital_status')
+                            ->label('Next of Kin Marital Status')
+                            ->options([
+                                'single' => 'Single',
+                                'married' => 'Married',
+                                'divorced' => 'Divorced',
+                                'widowed' => 'Widowed',
+                                'separated' => 'Separated',
+                            ])
+                            ->required(),
+                    ]),
+
+                Section::make('Membership Intention')
+                    ->columns(2)
+                    ->schema([
+                        Select::make('member_intention')
+                            ->label('Member Intention')
+                            ->options([
+                                'savings' => 'Savings',
+                                'loan' => 'Loan',
+                                'both' => 'Both',
+                            ])
+                            ->required()
+                            ->reactive(),
+                        TextInput::make('willing_weekly_savings_amount')
+                            ->label('Willing Weekly Savings Amount')
+                            ->numeric()
+                            ->prefix('UGX')
+                            ->minValue(1000)
+                            ->visible(fn (callable $get) => in_array($get('member_intention'), ['savings', 'both']))
+                            ->required(fn (callable $get) => in_array($get('member_intention'), ['savings', 'both'])),
+                    ]),
+
                 Section::make('Classification & Settings')
                     ->columns(3)
                     ->collapsible()
@@ -146,6 +241,7 @@ class MemberForm
                                 'group' => 'Group Member',
                                 'corporate' => 'Corporate',
                                 'staff' => 'Staff',
+                                'bumu' => 'Bumu Member',
                             ])
                             ->default('individual')
                             ->required(),

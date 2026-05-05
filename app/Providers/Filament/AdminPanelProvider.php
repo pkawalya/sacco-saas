@@ -2,9 +2,11 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Pages\Auth\Login;
 use App\Filament\Widgets\MyTenants;
 use App\Filament\Widgets\StatsOverview;
 use App\Filament\Widgets\TenantGrowthChart;
+use App\Http\Middleware\EnsureCentralDomain;
 use App\Models\Central\User;
 use BezhanSalleh\FilamentShield\FilamentShieldPlugin;
 use Filament\Actions\Action;
@@ -92,12 +94,8 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
-            ->domains([
-                config('tenancy.central_domain'),
-            ])
             ->viteTheme('resources/css/filament/admin/theme.css')
-            ->login()
-            ->registration()
+            ->login(Login::class)
 
             // ─── Appearance ─────────────────────────────
             ->colors(fn (): array => $this->resolveColors())
@@ -159,6 +157,7 @@ class AdminPanelProvider extends PanelProvider
                 SubstituteBindings::class,
                 DisableBladeIconComponents::class,
                 DispatchServingFilamentEvent::class,
+                EnsureCentralDomain::class,
             ])
             ->authMiddleware([
                 Authenticate::class,

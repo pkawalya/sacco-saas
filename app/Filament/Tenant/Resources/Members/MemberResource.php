@@ -2,14 +2,16 @@
 
 namespace App\Filament\Tenant\Resources\Members;
 
-use App\Filament\Tenant\Concerns\BelongsToModule;
+use App\Filament\Tenant\Concerns\BelongsToRole;
 use App\Filament\Tenant\Resources\Members\Pages\CreateMember;
 use App\Filament\Tenant\Resources\Members\Pages\EditMember;
 use App\Filament\Tenant\Resources\Members\Pages\ListMembers;
 use App\Filament\Tenant\Resources\Members\Pages\ViewMember;
+use App\Filament\Tenant\Resources\Members\RelationManagers\DocumentsRelationManager;
 use App\Filament\Tenant\Resources\Members\Schemas\MemberForm;
 use App\Filament\Tenant\Resources\Members\Tables\MembersTable;
 use App\Models\Tenant\Member;
+use App\Models\Tenant\User;
 use BackedEnum;
 use Filament\Infolists\Components\ImageEntry;
 use Filament\Infolists\Components\RepeatableEntry;
@@ -23,11 +25,13 @@ use Filament\Tables\Table;
 
 class MemberResource extends Resource
 {
-    use BelongsToModule;
+    use BelongsToRole;
 
     protected static ?string $model = Member::class;
 
     protected static string $moduleKey = 'member_management';
+
+    protected static array $allowedRoles = [User::ROLE_ADMIN, User::ROLE_MANAGER, User::ROLE_STAFF, User::ROLE_TELLER];
 
     protected static string|BackedEnum|null $navigationIcon = Heroicon::OutlinedUsers;
 
@@ -88,9 +92,33 @@ class MemberResource extends Resource
                                 TextEntry::make('national_id_type')
                                     ->label('ID Type'),
                                 TextEntry::make('national_id_number')
-                                    ->label('ID Number')
+                                    ->label('NIN Number')
                                     ->copyable(),
                             ]),
+                    ]),
+
+                Section::make('Next of Kin Information')
+                    ->icon(Heroicon::OutlinedUserGroup)
+                    ->columns(2)
+                    ->collapsible()
+                    ->schema([
+                        TextEntry::make('nok_name')->label('Full Name'),
+                        TextEntry::make('nok_gender')->label('Gender'),
+                        TextEntry::make('nok_relationship')->label('Relationship'),
+                        TextEntry::make('nok_national_id_number')->label('NIN Number')->copyable(),
+                        TextEntry::make('nok_marital_status')->label('Marital Status'),
+                    ]),
+
+                Section::make('Membership Intention')
+                    ->icon(Heroicon::OutlinedDocumentCheck)
+                    ->columns(2)
+                    ->collapsible()
+                    ->schema([
+                        TextEntry::make('member_intention')->label('Intention')->badge(),
+                        TextEntry::make('willing_weekly_savings_amount')
+                            ->label('Weekly Savings Amount')
+                            ->money('UGX')
+                            ->placeholder('—'),
                     ]),
 
                 Section::make('Contact Information')
@@ -267,7 +295,9 @@ class MemberResource extends Resource
 
     public static function getRelations(): array
     {
-        return [];
+        return [
+            DocumentsRelationManager::class,
+        ];
     }
 
     public static function getPages(): array
