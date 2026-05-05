@@ -21,6 +21,9 @@ return Application::configure(basePath: dirname(__DIR__))
         }
     )
     ->withMiddleware(function (Middleware $middleware): void {
+        // Trust Dokploy/Traefik reverse proxy
+        $middleware->trustProxies(at: '*');
+
         // Security headers on every response
         $middleware->append(SecurityHeaders::class);
     })

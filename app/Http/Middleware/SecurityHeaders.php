@@ -34,11 +34,11 @@ class SecurityHeaders
         // Content Security Policy — protect against XSS injection
         $response->headers->set(
             'Content-Security-Policy',
-            "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.bunny.net; font-src 'self' https://fonts.gstatic.com https://fonts.bunny.net; img-src 'self' data: blob:; connect-src 'self'; frame-ancestors 'self';"
+            "default-src 'self'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.bunny.net https://cdn.jsdelivr.net; font-src 'self' https://fonts.gstatic.com https://fonts.bunny.net data:; img-src 'self' data: blob: https:; connect-src 'self' https:; frame-ancestors 'self';"
         );
 
         // HSTS — enforce HTTPS for 1 year (only in production)
-        if ($request->isSecure()) {
+        if ($request->isSecure() || $request->header('X-Forwarded-Proto') === 'https') {
             $response->headers->set('Strict-Transport-Security', 'max-age=31536000; includeSubDomains');
         }
 
